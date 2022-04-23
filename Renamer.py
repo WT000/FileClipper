@@ -57,9 +57,10 @@ class Renamer:
 
         # Get an appropriate remove amount
         while True:
-            remove_amount = input("Enter how many characters you want to remove (e.g. start 3, start 1, end 4): ")
+            remove_amount = input("Enter how many characters you want to remove (e.g. start 1, "
+                                  "end 1 or both 1): ")
 
-            if (remove_amount.startswith("start") or remove_amount.startswith("end")):
+            if (remove_amount.startswith("start") or remove_amount.startswith("end") or remove_amount.startswith("both")):
                 remove_amount = remove_amount.split(" ")
 
                 if (self.format_amount(remove_amount)):
@@ -67,7 +68,7 @@ class Renamer:
 
             print("Please enter an appropriate value.")
 
-        # Get the file types
+        # Get the file type(s)
         while True:
             file_type = input("Enter file type(s) to perform this operation on (e.g. .pdf), separate different file"
                               " types with a space: ")
@@ -88,7 +89,10 @@ class Renamer:
                 if (file.endswith(type)):
                     curr_file_name = os.path.splitext(file)[0]
 
-                    if (len(curr_file_name) > self.remove_amount[1]):
+                    # Note that the "both" option will remove by remove_amount[1] * 2
+                    if (len(curr_file_name) > self.remove_amount[1] and self.remove_amount[0] != "both") \
+                            or (len(curr_file_name) > self.remove_amount[1] * 2):
+
                         new_file_name = None
                         match self.remove_amount[0]:
                             case "start":
@@ -97,8 +101,14 @@ class Renamer:
                             case "end":
                                 new_file_name = curr_file_name[:len(curr_file_name)-self.remove_amount[1]]
 
+                            case "both":
+                                new_file_name = curr_file_name[self.remove_amount[1]:len(curr_file_name) - self.remove_amount[1]]
+
                         os.replace(file, new_file_name + type)
 
                         print("Renamed {} to {}".format(curr_file_name, new_file_name))
+
+                    else:
+                        print("Couldn't rename {}".format(curr_file_name))
 
                     break
