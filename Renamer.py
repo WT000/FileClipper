@@ -18,7 +18,7 @@ class Renamer:
                 self.remove_amount = splitStr
                 return True
 
-        except:
+        except(ValueError):
             pass
 
         return False
